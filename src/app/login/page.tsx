@@ -8,27 +8,45 @@ import { createClient } from "@/utils/supabase/client";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
   const supabase = createClient();
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+    setMessage(null);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (isSignUp) {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
+      if (error) {
+        setError(error.message);
+      } else {
+        setMessage("Account created! You can now sign in.");
+        setIsSignUp(false);
+      }
     } else {
-      router.push("/dashboard");
+      const { error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message);
+      } else {
+        router.push("/dashboard");
+      }
     }
+    
+    setLoading(false);
   };
 
   return (
@@ -39,15 +57,25 @@ export default function Login() {
             <Heart size={32} className="text-nayepankh-orange" />
           </div>
         </div>
-        <h2 className="text-2xl font-extrabold text-center text-gray-900 mb-2">Welcome Back</h2>
-        <p className="text-gray-500 text-center mb-8 font-medium">Sign in to continue your volunteer journey.</p>
+        <h2 className="text-2xl font-extrabold text-center text-gray-900 mb-2">
+          {isSignUp ? "Create an Account" : "Welcome Back"}
+        </h2>
+        <p className="text-gray-500 text-center mb-8 font-medium">
+          {isSignUp ? "Join our volunteer movement today." : "Sign in to continue your volunteer journey."}
+        </p>
         
-        <form onSubmit={handleSignIn} className="space-y-4">
+        <form onSubmit={handleAuth} className="space-y-4">
           {error && (
             <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm text-center">
               {error}
             </div>
           )}
+          {message && (
+            <div className="bg-green-50 text-green-700 p-3 rounded-xl text-sm text-center">
+              {message}
+            </div>
+          )}
+          
           <input 
             type="email" 
             placeholder="Email address" 
@@ -69,9 +97,25 @@ export default function Login() {
             disabled={loading}
             className="w-full bg-primary text-white font-bold py-3 rounded-xl hover:bg-green-700 transition-colors shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? "Processing..." : isSignUp ? "Sign Up" : "Sign In"}
           </button>
         </form>
+
+        <div className="mt-6 text-center">
+          <p className="text-gray-500 text-sm">
+            {isSignUp ? "Already have an account?" : "Don't have an account?"}
+            <button 
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError(null);
+                setMessage(null);
+              }}
+              className="ml-2 text-primary font-bold hover:underline focus:outline-none"
+            >
+              {isSignUp ? "Sign In" : "Sign Up"}
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
