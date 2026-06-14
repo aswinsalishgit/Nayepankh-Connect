@@ -36,7 +36,7 @@ export default function ChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Vercel AI SDK hook for AI Support Buddy
-  const { messages: aiMessages, input: aiInput, handleInputChange: handleAiInputChange, handleSubmit: handleAiSubmit, isLoading: isAiLoading } = useChat({
+  const { messages: aiMessages, input: aiInput, handleInputChange: handleAiInputChange, handleSubmit: handleAiSubmit, isLoading: isAiLoading, error } = useChat({
     api: '/api/ai-assist',
   });
 
@@ -225,6 +225,20 @@ export default function ChatPage() {
               ))
             )
           )}
+          
+          {/* Display API Error if any */}
+          {activeTab === 'ai' && error && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] rounded-2xl px-5 py-3 shadow-sm bg-red-50 border border-red-100 text-red-600 rounded-tl-none">
+                <p className="text-sm font-semibold mb-1">API Error</p>
+                <p className="text-xs leading-relaxed">{error.message || "Failed to connect to the AI model."}</p>
+                <p className="text-xs mt-2 text-red-500">
+                  Please check your Vercel Environment Variables (OLLAMA_BASE_URL and OLLAMA_API_KEY). The provided API key was rejected by the server.
+                </p>
+              </div>
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
