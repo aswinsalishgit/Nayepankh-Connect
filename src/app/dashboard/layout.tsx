@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <Home size={20} />
             <span>Home</span>
           </Link>
-          <Link href="/dashboard/chat" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium transition-colors">
+          <Link href="/chat" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 font-medium transition-colors">
             <MessageSquare size={20} />
             <span>Chat</span>
           </Link>
