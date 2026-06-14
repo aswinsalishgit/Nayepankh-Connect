@@ -1,7 +1,7 @@
 import { streamText } from 'ai';
 import { createOllama } from 'ollama-ai-provider';
 
-export const runtime = 'edge';
+
 
 export async function POST(req: Request) {
   const { messages } = await req.json();
